@@ -199,7 +199,7 @@ public class StargateDHD extends JavaPlugin {
 			Block b = event.getBlock();
 			if (b.getType() != Material.WALL_SIGN) return;
 			
-			if (event.getLine(0).equals("::DHD::") && !hasPerm(p, "stargate.dhd.create", false)) {
+			if (event.getLine(0).equals("::DHD::") && !hasPerm(p, "stargate.dhd.create", p.isOp())) {
 				log.info("[DHD] NotaDHD");
 				event.setLine(0, "NOTaDHD");
 			}
