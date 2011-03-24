@@ -160,12 +160,6 @@ public class StargateDHD extends JavaPlugin {
 		public void onBlockRightClick(BlockRightClickEvent event) {
 			if (stargate == null) return;
 			Player p = event.getPlayer();
-			if (!hasPerm(p, "stargate.use", true) || !hasPerm(p, "stargate.dhd.use", true)) {
-				if (!denyMsg.isEmpty()) {
-					p.sendMessage(denyMsg);
-				}
-				return;
-			}
 			
 			final Sign sign = getDHD(event.getBlock());
 			if (sign == null) return;
@@ -175,6 +169,13 @@ public class StargateDHD extends JavaPlugin {
 			if (stargateNetwork.isEmpty()) stargateNetwork = defNetwork;
 			final Portal portal = Portal.getByName(stargateName, stargateNetwork);
 			if (portal == null) return;
+			
+			if (!hasPerm(p, "stargate.use", true) || !hasPerm(p, "stargate.dhd.use", true)) {
+				if (!denyMsg.isEmpty()) {
+					p.sendMessage(denyMsg);
+				}
+				return;
+			}
 			
 			if ((!portal.isOpen()) && (!portal.isFixed())) {
 				portal.cycleDestination(p);
