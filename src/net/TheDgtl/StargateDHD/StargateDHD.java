@@ -179,7 +179,6 @@ public class StargateDHD extends JavaPlugin {
 			
 			if ((!portal.isOpen()) && (!portal.isFixed())) {
 				portal.cycleDestination(p);
-				log.info("[DHD] Destination: " + portal.getDestinationName());
 				// Use the scheduler so the sign actually updates.
 				getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
@@ -277,7 +276,7 @@ public class StargateDHD extends JavaPlugin {
 				sgConfig = null;
 			}
 			if (event.getPlugin() == permissions) {
-				log.info("[Stargate-DHD] Permissions plugin list.");
+				log.info("[Stargate-DHD] Permissions plugin lost.");
 				permissions = null;
 			}
 		}
