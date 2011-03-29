@@ -200,8 +200,8 @@ public class StargateDHD extends JavaPlugin {
 			if (b.getType() != Material.WALL_SIGN) return;
 			
 			if (event.getLine(0).equals("::DHD::") && !hasPerm(p, "stargate.dhd.create", p.isOp())) {
-				log.info("[DHD] NotaDHD");
 				event.setLine(0, "NOTaDHD");
+				p.sendMessage("[DHD] Permission Denied");
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class StargateDHD extends JavaPlugin {
 	
 	private Plugin checkPlugin(Plugin plugin) {
 		if (plugin != null && plugin.isEnabled()) {
-			log.info("[Stargate-DHD] Using " + plugin.getDescription().getName() + " (v" + plugin.getDescription().getVersion() + ")");
+			log.info("[Stargate-DHD] Found " + plugin.getDescription().getName() + " (v" + plugin.getDescription().getVersion() + ")");
 			return plugin;
 		}
 		return null;
