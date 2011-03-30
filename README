@@ -41,6 +41,8 @@ Configuration
 =============
   Changes
 =============
+[Version 0.1.2]
+  - Updated to latest RB
 [Version 0.1.1]
   - Permissions check in the wrong place giving odd error messages
 [Version 0.1.0]

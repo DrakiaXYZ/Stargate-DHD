@@ -1,6 +1,6 @@
 name: Stargate-DHD
 main: net.TheDgtl.StargateDHD.StargateDHD
-version: 0.1.1
+version: 0.1.2
 description: A DHD plugin for the Stargate plugin for the Bukkit plugin for Minecraft
 author: Drakia
 website: http://www.thedgtl.net
