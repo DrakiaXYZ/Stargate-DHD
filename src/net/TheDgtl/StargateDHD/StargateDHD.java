@@ -32,8 +32,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -56,6 +59,7 @@ public class StargateDHD extends JavaPlugin {
 	private final bListener blockListener = new bListener();
 	private final sListener serverListener = new sListener();
 	private final pListener playerListener = new pListener();
+	private final eListener entityListener = new eListener();
 	
 	public static Logger log;
 	private PluginManager pm;
@@ -85,6 +89,8 @@ public class StargateDHD extends JavaPlugin {
 		
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.SIGN_CHANGE, blockListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.ENTITY_EXPLODE, entityListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Priority.Monitor, this);
 		
@@ -111,14 +117,52 @@ public class StargateDHD extends JavaPlugin {
 		 */
 		@Override
 		public void onSignChange(SignChangeEvent event) {
+			if (stargate == null) return;
 			Player p = event.getPlayer();
 			Block b = event.getBlock();
 			if (b.getType() != Material.WALL_SIGN) return;
 			
-			if (event.getLine(0).equals("::DHD::") && !hasPerm(p, "stargate.dhd.create", p.isOp())) {
-				event.setLine(0, "NOTaDHD");
-				p.sendMessage("[DHD] Permission Denied");
+			if (event.getLine(0).equals("::DHD::")) {
+				if (!hasPerm(p, "stargate.dhd.create", p.isOp())) {
+					event.setCancelled(true);
+					p.sendMessage("[DHD] Permission Denied");
+					return;
+				}
+				
+				String stargateName = event.getLine(1);
+				String stargateNetwork = event.getLine(2);
+				if (stargateNetwork.isEmpty()) stargateNetwork = defNetwork;
+				Portal portal = Portal.getByName(stargateName, stargateNetwork);
+				if (portal == null) {
+					event.setCancelled(true);
+					p.sendMessage("[DHD] Invalid Stargate");
+					return;
+				}
+				
+				event.setLine(1, portal.getName());
+				event.setLine(2, portal.getNetwork());
+				p.sendMessage("[DHD] Remote dialing device for --" + event.getLine(1) + "-- created");
+				log.info("[Stargate-DHD] " + p.getName() + " created DHD at (" + b.getWorld().getName() + "," + b.getX() + "," + b.getY() + "," + b.getZ() + ")");
 			}
+		}
+		
+		@Override
+		public void onBlockBreak(BlockBreakEvent event) {
+			if (stargate == null) return;
+			Player p = event.getPlayer();
+			Block b = event.getBlock();
+			// Check if a sign
+			if (b.getType() != Material.WALL_SIGN) return;
+			Sign sign = (Sign)b.getState();
+			// Check if a DHD
+			if (!sign.getLine(0).equals("::DHD::")) return;
+			if (!hasPerm(p, "stargate.dhd.destroy", p.isOp())) {
+				event.setCancelled(true);
+				p.sendMessage("[DHD] Permission Denied");
+				return;
+			}
+			p.sendMessage("[DHD] Remote dialing device destroyed");
+			log.info("[Stargate-DHD] " + p.getName() + " destroyed DHD at (" + b.getWorld().getName() + "," + b.getX() + "," + b.getY() + "," + b.getZ() + ")");
 		}
 	}
 	
@@ -175,24 +219,25 @@ public class StargateDHD extends JavaPlugin {
 			 * A DHD will scroll destinations on right click
 			 */
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				if (!hasPerm(p, "stargate.use", true) || !hasPerm(p, "stargate.dhd.use", true)) {
+				if (portal.isOpen() || portal.isFixed()) return;
+				
+				if (!hasPerm(p, "stargate.use", true) || !hasPerm(p, "stargate.dhd.use", true) ||
+					(Stargate.networkFilter && !hasPerm(p, "stargate.network." + portal.getNetwork(), p.isOp()))) {
 					if (!denyMsg.isEmpty()) {
 						p.sendMessage(denyMsg);
 					}
 					return;
 				}
 				
-				if ((!portal.isOpen()) && (!portal.isFixed())) {
-					portal.cycleDestination(p);
-					sign.setLine(2, portal.getNetwork());
-					sign.setLine(3, portal.getDestinationName());
-					// Use the scheduler so the sign actually updates.
-					getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-						public void run() {
-							sign.update();
-						}
-					}, 2);
-				}
+				portal.cycleDestination(p);
+				sign.setLine(2, portal.getNetwork());
+				sign.setLine(3, "--" + portal.getDestinationName() + "--");
+				// Use the scheduler so the sign actually updates.
+				getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					public void run() {
+						sign.update();
+					}
+				}, 2);
 			}
 		}
 	}
@@ -269,6 +314,20 @@ public class StargateDHD extends JavaPlugin {
 			if (event.getPlugin() == permissions) {
 				log.info("[Stargate-DHD] Permissions plugin lost.");
 				permissions = null;
+			}
+		}
+	}
+	
+	private class eListener extends EntityListener {
+		@Override
+		public void onEntityExplode(EntityExplodeEvent event) {
+			if (event.isCancelled()) return;
+			
+			for (Block b : event.blockList()) {
+				Sign sign = getDHD(b);
+				if (sign == null) continue;
+				b.setType(b.getType());
+				event.setCancelled(true);
 			}
 		}
 	}

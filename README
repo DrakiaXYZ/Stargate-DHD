@@ -13,6 +13,7 @@ Known Issues
 =============
  - stargate.dhd.use - Whether the player can use DHD devices.
  - stargate.dhd.create - Whether the player can create DHD devices. If not, "::DHD::" will be replaced with "NOTaDHD".
+ - stargate.dhd.destroy - Whether the player can destroy DHD devices.
 
 =============
 Instructions
@@ -41,6 +42,11 @@ Configuration
 =============
   Changes
 =============
+[Version 0.2.0]
+  - Added more output, it was confusing users.
+  - Need permissions to destroy a DHD
+  - Explosions no longer destroy DHDs
+  - Implemented Stargate 'stargate.network.*' permissions ability
 [Version 0.1.3]
   - Had to move delayed sync to the second tick to work with Stargate.
 [Version 0.1.2]
