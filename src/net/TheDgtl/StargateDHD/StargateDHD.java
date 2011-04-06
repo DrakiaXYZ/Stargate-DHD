@@ -127,8 +127,9 @@ public class StargateDHD extends JavaPlugin {
 		public void onPlayerInteract(PlayerInteractEvent event) {
 			if (stargate == null) return;
 			final Sign sign = getDHD(event.getClickedBlock());
-			Player p = event.getPlayer();
 			if (sign == null) return;
+
+			Player p = event.getPlayer();
 			String stargateName = sign.getLine(1);
 			String stargateNetwork = sign.getLine(2);
 			if (stargateNetwork.isEmpty()) stargateNetwork = defNetwork;
@@ -167,7 +168,7 @@ public class StargateDHD extends JavaPlugin {
 						portal.open(null, false);
 					}
 				} else {
-				portal.close(false);
+					portal.close(false);
 				}
 			}
 			/*
@@ -183,14 +184,14 @@ public class StargateDHD extends JavaPlugin {
 				
 				if ((!portal.isOpen()) && (!portal.isFixed())) {
 					portal.cycleDestination(p);
+					sign.setLine(2, portal.getNetwork());
+					sign.setLine(3, portal.getDestinationName());
 					// Use the scheduler so the sign actually updates.
 					getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 						public void run() {
-							sign.setLine(2, portal.getNetwork());
-							sign.setLine(3, portal.getDestinationName());
 							sign.update();
 						}
-					});
+					}, 2);
 				}
 			}
 		}
