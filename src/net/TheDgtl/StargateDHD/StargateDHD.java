@@ -105,7 +105,7 @@ public class StargateDHD extends JavaPlugin {
 	 */
 	public Sign getDHD(Block b) {
 		if (b == null) return null;
-		if (b.getType() != Material.WALL_SIGN) return null;
+		if (b.getType() != Material.WALL_SIGN && b.getType() != Material.SIGN_POST) return null;
 		Sign sign = (Sign)b.getState();
 		if (!sign.getLine(0).equalsIgnoreCase("::DHD::")) return null;
 		return sign;
@@ -120,7 +120,7 @@ public class StargateDHD extends JavaPlugin {
 			if (stargate == null) return;
 			Player p = event.getPlayer();
 			Block b = event.getBlock();
-			if (b.getType() != Material.WALL_SIGN) return;
+			if (b.getType() != Material.WALL_SIGN && b.getType() != Material.SIGN_POST) return;
 			
 			if (event.getLine(0).equals("::DHD::")) {
 				if (!hasPerm(p, "stargate.dhd.create", p.isOp())) {
@@ -152,7 +152,7 @@ public class StargateDHD extends JavaPlugin {
 			Player p = event.getPlayer();
 			Block b = event.getBlock();
 			// Check if a sign
-			if (b.getType() != Material.WALL_SIGN) return;
+			if (b.getType() != Material.WALL_SIGN && b.getType() != Material.SIGN_POST) return;
 			Sign sign = (Sign)b.getState();
 			// Check if a DHD
 			if (!sign.getLine(0).equals("::DHD::")) return;

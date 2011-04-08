@@ -25,7 +25,6 @@ Line3: NetworkName (Optional, will default to your Stargate default network if n
 
 Where "StargateName" and "NetworkName" are the remote gates name and network.
 If the network is not given, it will default to the Stargate plugins default network.
-If a player without stargate.dhd.create permissions tries to create a DHD, the top line will be set to "NOTaDHD".
 
 To use the DHD, you right-click on it to select the destination (The current destination will be shown on line 4, as well as
 on the Stargate itself). Once you have your destination chosen, left-click the sign to activate the portal.
@@ -33,7 +32,7 @@ The DHD does the appropriate permissions, and iConomy (if enabled) checks to mak
 permissions to do so.
 An added feature of the DHD is that the activating user is not the only person who can walk through the gate, anybody can use the
 gate once it is active. This allows an admin to open a hidden gate for a user to access an area they normally wouldn't be able to.
- 
+
 ==============
 Configuration
 ==============
@@ -42,6 +41,8 @@ Configuration
 =============
   Changes
 =============
+[Version 0.2.1]
+  - Allow DHDs to be SignPosts
 [Version 0.2.0]
   - Added more output, it was confusing users.
   - Need permissions to destroy a DHD
