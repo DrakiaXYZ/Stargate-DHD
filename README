@@ -41,6 +41,10 @@ Configuration
 =============
   Changes
 =============
+[Version 0.3.0]
+  - Added clearing of sign on gate deactivate/close
+  - Updated to use new Stargate events
+  - Updated for Stargate v0.6.0
 [Version 0.2.1]
   - Allow DHDs to be SignPosts
 [Version 0.2.0]

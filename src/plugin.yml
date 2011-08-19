@@ -1,6 +1,18 @@
 name: Stargate-DHD
 main: net.TheDgtl.StargateDHD.StargateDHD
-version: 0.2.1
+version: 0.3.0
 description: A DHD plugin for the Stargate plugin for the Bukkit plugin for Minecraft
 author: Drakia
 website: http://www.thedgtl.net
+depend:
+  - Stargate
+permissions:
+  stargate.dhd.use:
+    default: true
+    description: Allow use of DHDs
+  stargate.dhd.create:
+    default: op
+    description: Allow creation of DHDs
+  stargate.dhd.destroy:
+    default: op
+    description: Allow destruction of DHDs
