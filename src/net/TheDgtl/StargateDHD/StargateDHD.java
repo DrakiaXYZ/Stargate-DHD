@@ -115,7 +115,7 @@ public class StargateDHD extends JavaPlugin {
 		
 		// Invalid destination
 		if ((destination == null) || (destination == portal)) {
-			Stargate.sendMessage(player, Stargate.getInvMsg());
+			Stargate.sendMessage(player, Stargate.getString("invalidMsg"));
 			return;
 		}
 		
@@ -127,13 +127,13 @@ public class StargateDHD extends JavaPlugin {
 		
 		// Check if the player can use the private gate
 		if (portal.isPrivate() && !Stargate.canPrivate(player, portal)) {
-			Stargate.sendMessage(player, Stargate.getDenyMsg());
+			Stargate.sendMessage(player, Stargate.getString("denyMsg"));
 			return;
 		}
 		
 		// Destination blocked
 		if ((destination.isOpen()) && (!destination.isAlwaysOn())) {
-			Stargate.sendMessage(player, Stargate.getBlockMsg());
+			Stargate.sendMessage(player, Stargate.getString("blockMsg"));
 			return;
 		}
 		
@@ -249,7 +249,7 @@ public class StargateDHD extends JavaPlugin {
 				if (portal.isOpen() || portal.isFixed()) return;
 				
 				if (!hasPerm(p, "stargate.dhd.use") || !Stargate.canAccessNetwork(p, portal.getNetwork())) {
-					Stargate.sendMessage(p, Stargate.getDenyMsg());
+					Stargate.sendMessage(p, Stargate.getString("denyMsg"));
 					return;
 				}
 				activeList.put(portal, event.getClickedBlock());
