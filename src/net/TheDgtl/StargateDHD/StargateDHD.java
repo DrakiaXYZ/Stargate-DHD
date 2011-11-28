@@ -27,6 +27,7 @@ import net.TheDgtl.Stargate.event.StargateCloseEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
 import net.TheDgtl.Stargate.event.StargateListener;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -239,6 +240,10 @@ public class StargateDHD extends JavaPlugin {
 			 * A DHD activates a stargate when it's damaged.
 			 */
 			if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+				// Cancel even if in creative mode to stop destruction
+				if (p.getGameMode().equals(GameMode.CREATIVE)) {
+					event.setCancelled(true);
+				}
 				onSignClicked(p, portal);
 				return;
 			}
