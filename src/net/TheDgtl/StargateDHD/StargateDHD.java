@@ -25,7 +25,6 @@ import net.TheDgtl.Stargate.Portal;
 import net.TheDgtl.Stargate.Stargate;
 import net.TheDgtl.Stargate.event.StargateCloseEvent;
 import net.TheDgtl.Stargate.event.StargateDeactivateEvent;
-import net.TheDgtl.Stargate.event.StargateListener;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -33,18 +32,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -52,6 +48,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
 
+@SuppressWarnings("unused")
 public class StargateDHD extends JavaPlugin {
 	// Hooking plugins
 	private Stargate stargate = null;
@@ -73,21 +70,18 @@ public class StargateDHD extends JavaPlugin {
 	public void onEnable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		pm = getServer().getPluginManager();
-		log = Logger.getLogger("Minecraft");
+		log = getServer().getLogger();
 		
 		log.info(pdfFile.getName() + " v." + pdfFile.getVersion() + " is enabled.");
 		
 		permissions = (Permissions)checkPlugin("Permissions");
 		stargate = (Stargate)checkPlugin("Stargate");
 		
-		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.SIGN_CHANGE, blockListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.ENTITY_EXPLODE, entityListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Priority.Monitor, this);
-		pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Priority.Monitor, this);
-		pm.registerEvent(Event.Type.CUSTOM_EVENT, stargateListener, Priority.Monitor, this);
-		
+		pm.registerEvents(new pListener(), this);
+		pm.registerEvents(new bListener(), this);
+		pm.registerEvents(new eListener(), this);
+		pm.registerEvents(new sListener(), this);
+		pm.registerEvents(new sgListener(), this);
 	}
 	
 	public void onDisable() {
@@ -142,11 +136,11 @@ public class StargateDHD extends JavaPlugin {
 		portal.open(null, false);
 	}
 	
-	private class bListener extends BlockListener {
+	private class bListener implements Listener {
 		/*
 		 * We don't want just anybody creating a DHD
 		 */
-		@Override
+		@EventHandler
 		public void onSignChange(SignChangeEvent event) {
 			if (stargate == null) return;
 			Player p = event.getPlayer();
@@ -177,7 +171,7 @@ public class StargateDHD extends JavaPlugin {
 			log.info("[Stargate-DHD] " + p.getName() + " created DHD at (" + b.getWorld().getName() + "," + b.getX() + "," + b.getY() + "," + b.getZ() + ")");
 		}
 		
-		@Override
+		@EventHandler
 		public void onBlockBreak(BlockBreakEvent event) {
 			if (stargate == null) return;
 			Player p = event.getPlayer();
@@ -197,8 +191,8 @@ public class StargateDHD extends JavaPlugin {
 		}
 	}
 	
-	private class sgListener extends StargateListener {
-		@Override
+	private class sgListener implements Listener {
+		@EventHandler
 		public void onStargateDeactivate(StargateDeactivateEvent event) {
 			Portal portal = event.getPortal();
 			Block b = activeList.get(portal);
@@ -210,7 +204,7 @@ public class StargateDHD extends JavaPlugin {
 			activeList.remove(portal);
 		}
 		
-		@Override
+		@EventHandler
 		public void onStargateClose(StargateCloseEvent event) {
 			Portal portal = event.getPortal();
 			Block b = activeList.get(portal);
@@ -223,8 +217,8 @@ public class StargateDHD extends JavaPlugin {
 		}
 	}
 	
-	private class pListener extends PlayerListener {
-		@Override
+	private class pListener implements Listener {
+		@EventHandler
 		public void onPlayerInteract(PlayerInteractEvent event) {
 			if (stargate == null) return;
 			final Sign sign = getDHD(event.getClickedBlock());
@@ -295,8 +289,8 @@ public class StargateDHD extends JavaPlugin {
 		return null;
 	}
 	
-	private class sListener extends ServerListener {
-		@Override
+	private class sListener implements Listener {
+		@EventHandler
 		public void onPluginEnable(PluginEnableEvent event) {
 			if (stargate == null) {
 				if (event.getPlugin().getDescription().getName().equalsIgnoreCase("Stargate")) {
@@ -310,7 +304,7 @@ public class StargateDHD extends JavaPlugin {
 			}
 		}
 		
-		@Override
+		@EventHandler
 		public void onPluginDisable(PluginDisableEvent event) {
 			if (event.getPlugin() == stargate) {
 				log.info("[Stargate-DHD] Stargate plugin lost.");
@@ -323,8 +317,8 @@ public class StargateDHD extends JavaPlugin {
 		}
 	}
 	
-	private class eListener extends EntityListener {
-		@Override
+	private class eListener implements Listener {
+		@EventHandler
 		public void onEntityExplode(EntityExplodeEvent event) {
 			if (event.isCancelled()) return;
 			
