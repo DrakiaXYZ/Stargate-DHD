@@ -54,13 +54,6 @@ public class StargateDHD extends JavaPlugin {
 	private Stargate stargate = null;
 	private Permissions permissions = null;
 	
-	// Listeners
-	private final bListener blockListener = new bListener();
-	private final sListener serverListener = new sListener();
-	private final pListener playerListener = new pListener();
-	private final eListener entityListener = new eListener();
-	private final sgListener stargateListener = new sgListener();
-	
 	public static Logger log;
 	private PluginManager pm;
 	
