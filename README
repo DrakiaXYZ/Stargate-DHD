@@ -46,6 +46,8 @@ Configuration
 =============
   Changes
 =============
+[Version 0.3.4]
+  - Rebuild for slight API changes in Stargate 0.7.7.0
 [Version 0.3.3]
   - Update for Stargate 0.7.5.0
 [Version 0.3.2]
